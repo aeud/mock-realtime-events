@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello, Atom!</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Hello, Atom!</a>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="index2.html">Other page</a>
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row">
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Add actions to the session</h5>
+                        <button type="button" id="primaryBtn" class="action-here btn btn-primary btn-sm"
+                            data-action="Primary">Primary</button>
+                        <button type="button" id="secondaryBtn" class="action-here btn btn-secondary btn-sm"
+                            data-action="Secondary">Secondary</button>
+                        <button type="button" id="successBtn" class="action-here btn btn-success btn-sm"
+                            data-action="Success">Success</button>
+                        <button type="button" id="dangerBtn" class="action-here btn btn-danger btn-sm"
+                            data-action="Danger">Danger</button>
+                        <button type="button" id="warningBtn" class="action-here btn btn-warning btn-sm"
+                            data-action="Warning">Warning</button>
+                        <button type="button" id="infoBtn" class="action-here btn btn-info btn-sm"
+                            data-action="Info">Info</button>
+                        <button type="button" id="lightBtn" class="action-here btn btn-light btn-sm"
+                            data-action="Light">Light</button>
+                        <button type="button" id="darkBtn" class="action-here btn btn-dark btn-sm"
+                            data-action="Dark">Dark</button>
+                        <div>
+                            <pre id="currentSession"></pre>
+                        </div>
+                        <div>
+                            <button type="button" id="resetBtn" class="btn btn-link" data-action="Primary">Reset
+                                the session</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Get recommendations</h5>
+                        <pre id="reco"></pre>
+                        <div>
+                            <button type="button" id="resetRecoBtn" class="btn btn-link" data-action="Primary">Refresh
+                                reco</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"
+    integrity="sha512-pumBsjNRGGqkPzKHndZMaAG+bir374sORyzM3uulLV14lN5LyykqNk8eEeUlUkB3U0M4FApyaHraT65ihJhDpQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</script>
+<script>
+    // Build the state from the previous session
+    let actions;
+    try {
+        actions = JSON.parse(localStorage.getItem("actions") || "[]");
+    } catch {
+        actions = [];
+    }
+
+    // Add events to the state by touching the action buttons
+    $(".action-here").click(function () {
+        const action = $(this).data("action");
+        addActionToTheStore(action);
+        mockCallAPI();
+        displayCurrentSession();
+    });
+
+    // Utils
+    const addActionToTheStore = (action) => {
+        actions.push(action);
+        localStorage.setItem("actions", JSON.stringify(actions));
+    }
+    const getReco = () => {
+        if (actions && actions.length > 0) {
+            $("#reco").html(`Reco based on ${JSON.stringify(actions, null, 2)}`);
+        } else {
+            $("#reco").html(`No recommendations`);
+        }
+    };
+    const mockCallAPI = () => {
+        $("#reco").html(`Call the API... <i class="fa-solid fa-arrows-rotate fa-spin"></i>`);
+        setTimeout(getReco, 1000);
+    };
+
+    const resetStore = () => {
+        actions = [];
+        localStorage.setItem("actions", JSON.stringify(actions));
+        mockCallAPI();
+        displayCurrentSession();
+    };
+    const displayCurrentSession = () => {
+        $("#currentSession").html(`Current state: ${JSON.stringify(actions, null, 2)}`);
+    };
+    // Control bar
+    $("#resetBtn").click(resetStore);
+    $("#resetRecoBtn").click(mockCallAPI);
+    // Iinitiate the recommendation banner (display)
+    mockCallAPI();
+    displayCurrentSession();
+</script>
+
+</html>
