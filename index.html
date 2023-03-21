@@ -107,8 +107,8 @@
         actions.push(action);
         setActions(actions);
     }
-    const resetActions = (action) => {
-        actions = [];
+    const resetActions = () => {
+        actions.splice(0, actions.length);
         setActions(actions);
     }
     const getReco = () => {
