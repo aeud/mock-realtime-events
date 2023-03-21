@@ -90,26 +90,26 @@
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </script>
 <script>
-    // Build the state from the previous session
-    let actions;
-    try {
-        actions = JSON.parse(localStorage.getItem("actions") || "[]");
-    } catch {
-        actions = [];
-    }
-
-    // Add events to the state by touching the action buttons
-    $(".action-here").click(function () {
-        const action = $(this).data("action");
-        addActionToTheStore(action);
-        mockCallAPI();
-        displayCurrentSession();
-    });
-
+    const storageTech = sessionStorage;
     // Utils
-    const addActionToTheStore = (action) => {
+    const setActions = (actions) => {
+        storageTech.setItem("actions", JSON.stringify(actions));
+    }
+    const getActions = () => {
+        try {
+            return JSON.parse(storageTech.getItem("actions") || "[]");
+        } catch {
+
+        }
+        return [];
+    }
+    const insertAction = (action) => {
         actions.push(action);
-        localStorage.setItem("actions", JSON.stringify(actions));
+        setActions(actions);
+    }
+    const resetActions = (action) => {
+        actions = [];
+        setActions(actions);
     }
     const getReco = () => {
         if (actions && actions.length > 0) {
@@ -124,8 +124,7 @@
     };
 
     const resetStore = () => {
-        actions = [];
-        localStorage.setItem("actions", JSON.stringify(actions));
+        resetActions();
         mockCallAPI();
         displayCurrentSession();
     };
@@ -133,6 +132,19 @@
         $("#currentSession").html(`Current state: ${JSON.stringify(actions, null, 2)}`);
     };
     // Control bar
+    // Build the state from the previous session
+    const actions = getActions();
+
+
+    // Add events to the state by touching the action buttons
+    $(".action-here").click(function () {
+        const action = $(this).data("action");
+        insertAction(action);
+        mockCallAPI();
+        displayCurrentSession();
+    });
+
+
     $("#resetBtn").click(resetStore);
     $("#resetRecoBtn").click(mockCallAPI);
     // Iinitiate the recommendation banner (display)
